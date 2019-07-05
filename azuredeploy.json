@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "WebAppName": {
+            "type": "String"
+        },
+        "newOrExisting": {
+            "type": "String",
+            "allowedValues": [
+                "new",
+                "existing"
+            ]
+        },
+        "AppServicePlan": {
+            "defaultValue": "MyAppServicePlan",
+            "type": "String"
+        },
+        "trafficManagerProfile": {
+            "defaultValue": "MyTMProfile",
+            "type": "String"
+        },
+        "Location": {
+            "defaultValue": "West US",
+            "type": "string"
+        }
+    },
+    "variables": {
+        "templatelink": "[concat('https://raw.githubusercontent.com/rjmax/ArmExamples/master/',parameters('newOrExisting'),'WebAppTM.json')]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-01-01",
+            "name": "nestedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('templatelink')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "WebAppName": {
+                        "value": "[parameters('WebAppName')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "exampleOutput": {
+            "value": "[reference('nestedTemplate')]",
+            "type": "object"
+        }
+    }
+}
